@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
         val btAdvice= findViewById<Button>(R.id.btAdvice)
         val btPause=findViewById<Button>(R.id.btPause)
 
-        tvAdvice.text =""
+        tvAdvice.text ="New Advice"
+
         var pressed:Boolean
         btAdvice.setOnClickListener{
             pressed=true
@@ -28,9 +29,9 @@ class MainActivity : AppCompatActivity() {
                 while(pressed) {
                     getApiResult()
                     withContext(Dispatchers.Main) {
+                        if(advice?.slip?.advice.toString()!="null")
                         tvAdvice.text = advice?.slip?.advice.toString()
                     }
-
                 }
             }
         }
@@ -62,6 +63,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-        delay(1000L)
+        delay(100L)
    }
 }
