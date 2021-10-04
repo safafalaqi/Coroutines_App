@@ -5,11 +5,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,17 +18,31 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val tvAdvice= findViewById<TextView>(R.id.tvAdvice)
         val btAdvice= findViewById<Button>(R.id.btAdvice)
+        val btPause=findViewById<Button>(R.id.btPause)
+
+        tvAdvice.text =""
+        var pressed:Boolean
         btAdvice.setOnClickListener{
+            pressed=true
+            CoroutineScope(Dispatchers.IO).launch {
+                while(pressed) {
+                    getApiResult()
+                    withContext(Dispatchers.Main) {
+                        tvAdvice.text = advice?.slip?.advice.toString()
+                    }
 
-                getApiResult()
-                tvAdvice.text = advice?.slip?.advice.toString()
-
+                }
+            }
+        }
+        btPause.setOnClickListener{
+            pressed=false
         }
 
     }
 
 
-    private fun getApiResult(){
+    suspend fun getApiResult(){
+
         val apiInterface = APIClient().getClient()?.create(APIInterface::class.java)
 
         val call: Call<Advice?>? = apiInterface!!.doGetListResources()
@@ -51,6 +62,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-
+        delay(1000L)
    }
 }
